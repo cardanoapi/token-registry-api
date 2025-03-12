@@ -1,10 +1,12 @@
 {
-  "name": "token-registry",
+  "name": "token-registry-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node index.ts"
+    "start": "ts-node src/index.ts",
+    "build": "tsc",
+    "ts-node": "ts-node"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +16,7 @@
     "express": "^4.21.2"
   },
   "devDependencies": {
-    "@types/node": "^22.13.10"
+    "@types/node": "^22.13.10",
+    "typescript": "^5.6.2"
   }
 }
