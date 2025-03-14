@@ -1,11 +1,7 @@
 import path from "path";
 import fs from "fs";
 
-export async function queryCache(
-  localDir: string,
-  id: string,
-  res: any
-) {
+export async function queryCache(localDir: string, id: string, res: any) {
   const filePath = path.join(localDir, `${id}.json`);
   fs.promises
     .stat(filePath)
@@ -23,6 +19,8 @@ export async function queryCache(
         });
     })
     .catch(() => {
-      res.status(404).json({ error: `File for id '${id}' not found` });
+      res
+        .status(404)
+        .json({ message: `File for id '${id}' not found`, status: 404 });
     });
 }

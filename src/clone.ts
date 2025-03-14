@@ -1,12 +1,8 @@
-import { FOLDER_NAME, LOCAL_DIR, REPO_NAME, REPO_OWNER } from ".";
 import { cloneMappings } from "./utils";
 
-export async function runClone() {
-  const repoUrl = `https://github.com/${REPO_OWNER}/${REPO_NAME}.git`;
-  const localDir = `./${LOCAL_DIR}`;
-
+export async function runClone(repoUrl: string, localDir:string, folderName: string) {
   try {
-    await cloneMappings(repoUrl, FOLDER_NAME, localDir);
+    await cloneMappings(repoUrl, folderName, localDir);
   } catch (err) {
     console.error("Failed to clone folder:", err);
   }

@@ -15,13 +15,14 @@ const scheduleUpdate = process.env.SCHEDULE_UPDATE
   ? process.env.SCHEDULE_UPDATE === "true"
   : false;
 
-export const REPO_OWNER = "cardano-foundation";
-export const REPO_NAME = "cardano-token-registry";
-export const BRANCH_NAME = "master";
-export const FOLDER_NAME = "mappings";
-export const LOCAL_DIR = "offchain-metadata";
-export const DAYS = 2;
-export const INTERVAL = DAYS * 24 * 60 * 60 * 1000;
+const REPO_OWNER = "cardano-foundation";
+const REPO_NAME = "cardano-token-registry";
+const BRANCH_NAME = "master";
+const FOLDER_NAME = "mappings";
+const LOCAL_DIR = "offchain-metadata";
+const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}.git`;
+const DAYS = 2;
+const INTERVAL = DAYS * 24 * 60 * 60 * 1000;
 
 type Health = {
   lastCommit: {
@@ -59,12 +60,12 @@ app.get("/metadata/:id", async (req: any, res: any) => {
   }
 });
 
-runClone();
+runClone(REPO_URL, LOCAL_DIR, FOLDER_NAME);
 setInterval(async () => {
   console.log(
     `Updating mapings from ${`https://github.com/${REPO_OWNER}/${REPO_NAME}.git`}`
   );
-  await runClone();
+  await runClone(REPO_URL, LOCAL_DIR, FOLDER_NAME);
 }, INTERVAL);
 
 app.get("/health", async (req: any, res: any) => {
