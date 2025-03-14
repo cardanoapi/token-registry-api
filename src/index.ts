@@ -5,6 +5,14 @@ import { queryCache } from "./queryCache";
 import { queryGithub } from "./queryGithub";
 import { runClone } from "./clone";
 import { differenceInSeconds } from "date-fns";
+import {
+  BRANCH_NAME,
+  INTERVAL,
+  LOCAL_DIR,
+  REPO_NAME,
+  REPO_OWNER,
+  REPO_URL,
+} from "./config";
 
 require("dotenv").config();
 const express = require("express");
@@ -14,15 +22,6 @@ const port = process.env.SERVER_PORT ? process.env.SERVER_PORT : 8081;
 const scheduleUpdate = process.env.SCHEDULE_UPDATE
   ? process.env.SCHEDULE_UPDATE === "true"
   : false;
-
-const REPO_OWNER = "cardano-foundation";
-const REPO_NAME = "cardano-token-registry";
-const BRANCH_NAME = "master";
-const FOLDER_NAME = "mappings";
-const LOCAL_DIR = "offchain-metadata";
-const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}.git`;
-const DAYS = 2;
-const INTERVAL = DAYS * 24 * 60 * 60 * 1000;
 
 type Health = {
   lastCommit: {
@@ -60,12 +59,12 @@ app.get("/metadata/:id", async (req: any, res: any) => {
   }
 });
 
-runClone(REPO_URL, LOCAL_DIR, FOLDER_NAME);
+runClone();
 setInterval(async () => {
   console.log(
     `Updating mapings from ${`https://github.com/${REPO_OWNER}/${REPO_NAME}.git`}`
   );
-  await runClone(REPO_URL, LOCAL_DIR, FOLDER_NAME);
+  await runClone();
 }, INTERVAL);
 
 app.get("/health", async (req: any, res: any) => {
@@ -117,6 +116,15 @@ app.get("/health", async (req: any, res: any) => {
     };
 
     res.status(200).json(healthStatus);
+  } catch (error) {
+    res.status(500).json({ error: "Server error", details: error });
+  }
+});
+
+app.post("/clone", async (req: any, res: any) => {
+  try {
+    await runClone();
+    res.status(200).json({ message: `${REPO_URL} cloned successfully` });
   } catch (error) {
     res.status(500).json({ error: "Server error", details: error });
   }
