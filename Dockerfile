@@ -1,6 +1,9 @@
 # Base image
 FROM node:20-alpine as base
 
+# Install Git
+RUN apk add --no-cache git
+
 # Set the working directory inside the container
 WORKDIR /app
 
@@ -23,8 +26,13 @@ RUN yarn install --frozen-lockfile
 # Build the application (ensure you have a 'build' script in package.json)
 RUN yarn build
 
+RUN node dist/forceClone.js
+
 # Production stage
 FROM node:20-alpine as prod
+
+# Install Git in production stage as well
+RUN apk add --no-cache git
 
 WORKDIR /app
 
