@@ -5,5 +5,6 @@
 
 # Steps to run
 
-- specify `SERVER_PORT` in a `.env` file (Default is 8081)
+- specify `SERVER_PORT` in `.env` file (Default is 8081)
+- specify `SCHEDULE_UPDATE` in `.env` file to clone data from token registry and use it as cache 
 - `yarn && yarn start`
