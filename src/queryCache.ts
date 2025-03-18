@@ -1,6 +1,6 @@
 import path from "path";
 import fs from "fs";
-import { INTERVAL, LOCAL_DIR } from "./config";
+import { INTERVAL, LOCAL_DIR, scheduleUpdate } from "./config";
 import { differenceInSeconds } from "date-fns";
 
 type Health = {
@@ -11,8 +11,8 @@ type Health = {
     date: string;
   }; // last commit details. read from LOCAL_DIR/.commit file
   lastCloned: string; // read this from LOCAL_DIR/.timestamp file
-  nextClone: string; // add INTERVAL milliseconds to the timestamp file and create a date object .toISOstring()
-  eta: string; // calculate the hours:minutes:seconds between current and next time
+  nextClone?: string; // add INTERVAL milliseconds to the timestamp file and create a date object .toISOstring()
+  eta?: string; // calculate the hours:minutes:seconds between current and next time
 };
 
 export async function queryCache(localDir: string, id: string, res: any) {
@@ -71,11 +71,16 @@ export async function cacheHealth(res: any) {
     2,
     "0"
   )}m:${String(seconds).padStart(2, "0")}s`;
+  const nextCloneAndEta = scheduleUpdate
+    ? {
+        nextClone: nextCloneDate.toISOString(),
+        eta: eta,
+      }
+    : {};
   const healthStatus: Health = {
     lastCommit: JSON.parse(lastCommitDetails) as any,
     lastCloned: lastClonedDate.toISOString(),
-    nextClone: nextCloneDate.toISOString(),
-    eta: eta,
+    ...nextCloneAndEta,
   };
   res.status(200).json(healthStatus);
 }

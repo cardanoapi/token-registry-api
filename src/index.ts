@@ -6,19 +6,17 @@ import {
   BRANCH_NAME,
   INTERVAL,
   LOCAL_DIR,
+  port,
   REPO_NAME,
   REPO_OWNER,
   REPO_URL,
+  scheduleUpdate,
+  useGithub,
 } from "./config";
 
-require("dotenv").config();
 const express = require("express");
 
 const app = express();
-const port = process.env.SERVER_PORT ? process.env.SERVER_PORT : 8081;
-const scheduleUpdate = process.env.SCHEDULE_UPDATE
-  ? process.env.SCHEDULE_UPDATE === "true"
-  : false;
 
 // Define the /metadata endpoint
 app.get("/metadata/:id", async (req: any, res: any) => {
@@ -27,7 +25,7 @@ app.get("/metadata/:id", async (req: any, res: any) => {
     if (!id) {
       return res.status(400).json({ error: "missing required parameter 'id'" });
     }
-    if (scheduleUpdate) {
+    if (!useGithub) {
       return await queryCache(LOCAL_DIR, id, res);
     } else {
       const tokenRegistryRequest = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/refs/heads/${BRANCH_NAME}/mappings/${id}.json`;
@@ -56,7 +54,7 @@ setInterval(async () => {
 
 app.get("/health", async (req: any, res: any) => {
   try {
-    if (scheduleUpdate) {
+    if (!useGithub) {
       return await cacheHealth(res);
     } else {
       return await githubHealth(res);
