@@ -19,6 +19,9 @@ jobs:
         id: get_latest_tag
         run: |
           latest_tag=$(curl -s https://api.github.com/repos/cardanoapi/token-registry-api/releases/latest | jq -r .tag_name)
+          if [[ "$latest_tag" == "null" || -z "$latest_tag" ]]; then
+            latest_tag="latest"
+          fi
           echo "::set-output name=tag::$latest_tag"
 
       - name: Log in to GitHub Container Registry
@@ -36,4 +39,4 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/token-registry-api:${{ steps.get_latest_tag.outputs.tag }}
           build-args: |
-            DBSYNC_TAG=${{ steps.get_latest_tag.outputs.tag }}
+            DBSYNC_TAG=latest
