@@ -42,9 +42,10 @@ RUN yarn install --production --frozen-lockfile
 
 # Copy built application files
 COPY --from=build /app/dist/ /app/dist/
+COPY --from=build /app/offchain-metadata/ /app/offchain-metadata/
 
 # Expose the port the app will run on
-EXPOSE 8081
+EXPOSE 8080
 
 # Run the application
 CMD ["node", "dist/index.js"]
